@@ -103,17 +103,26 @@ async function askGroq(question, matches) {
       (m) =>
         `[Issue #${m.issue.id}] ${m.issue.title}\n` +
         `Estado: ${m.issue.state} | Labels: ${m.issue.labels.join(', ')}\n` +
+        `Contenido del issue:\n${m.issue.body || '(sin descripción registrada)'}\n` +
         `URL: ${m.issue.url}`
     )
-    .join('\n\n');
+    .join('\n\n---\n\n');
 
   const systemPrompt =
     'Eres el asistente de la base de conocimiento de errores de CORIOTLAB ' +
-    '(Sistemas de Control y Robótica, ITM Medellín). Respondes SOLO con base ' +
-    'en los issues de contexto que se te dan. Si ninguno responde realmente ' +
-    'la pregunta, dilo con claridad en vez de inventar una solución. Siempre ' +
-    'que menciones un caso, cita su número de issue (#N) y su URL. Responde ' +
-    'en español, de forma técnica, directa y breve.';
+    '(Sistemas de Control y Robótica, ITM Medellín). ' +
+    'REGLA ESTRICTA: solo puedes usar información que esté LITERALMENTE en ' +
+    'los issues de contexto que se te dan. Puedes reformular esa información ' +
+    'con tus propias palabras para que se lea claro, pero NO puedes agregar ' +
+    'pasos de diagnóstico, causas, valores técnicos, ni soluciones que no ' +
+    'estén explícitamente mencionados en el issue, aunque tu conocimiento ' +
+    'general sobre el tema te sugiera que "normalmente" así se resuelve. ' +
+    'Si el issue no da un detalle específico, NO lo completes ni lo inventes ' +
+    '— simplemente no lo menciones. Si el contexto es breve, tu respuesta ' +
+    'debe ser igual de breve; una respuesta larga y elaborada sobre un caso ' +
+    'documentado con pocas líneas es una señal de que estás inventando. ' +
+    'Siempre que menciones un caso, cita su número de issue (#N) y su URL. ' +
+    'Responde en español, de forma técnica, directa y sin relleno.';
 
   const userPrompt = `Pregunta: ${question}\n\nIssues relevantes encontrados:\n\n${context}`;
 
@@ -129,7 +138,8 @@ async function askGroq(question, matches) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.2,
+      temperature: 0, // determinismo máximo: minimiza la tendencia a "elaborar" de más
+      max_tokens: 500, // limita respuestas largas que sugieren contenido inventado
     }),
   });
 
