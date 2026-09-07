@@ -122,6 +122,10 @@ async function askGroq(question, matches) {
     'debe ser igual de breve; una respuesta larga y elaborada sobre un caso ' +
     'documentado con pocas líneas es una señal de que estás inventando. ' +
     'Siempre que menciones un caso, cita su número de issue (#N) y su URL. ' +
+    'FORMATO DE SALIDA: responde en texto plano, sin Markdown — no uses ' +
+    'asteriscos para negrita, no uses corchetes ni paréntesis para crear ' +
+    'enlaces tipo [texto](url), no uses encabezados con #. Si necesitas ' +
+    'mostrar una URL, escríbela tal cual, como texto plano. ' +
     'Responde en español, de forma técnica, directa y sin relleno.';
 
   const userPrompt = `Pregunta: ${question}\n\nIssues relevantes encontrados:\n\n${context}`;
