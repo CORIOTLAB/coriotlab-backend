@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORIOT · Registro de errores</title>
+<link rel="icon" type="image/svg+xml" href="/assets/Coriotlab_Isotipo_FullColor.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=MuseoModerno:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul-itm: #112d6a;
+    --magenta: #c14894;
+    --azul-digital: #58acde;
+    --gris-pizarra: #30302f;
+    --gris-suave: #6b6b6a;
+    --borde: #e5e4e2;
+    --fondo: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--gris-pizarra);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .contenedor {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+
+  header img {
+    height: 28px;
+    width: auto;
+  }
+
+  header span {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--gris-suave);
+    letter-spacing: 0.02em;
+  }
+
+  h1 {
+    font-family: 'MuseoModerno', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 38px);
+    line-height: 1.15;
+    margin: 0 0 32px;
+    color: var(--gris-pizarra);
+  }
+
+  form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--borde);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--magenta);
+  }
+
+  button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 22px;
+    background: var(--magenta);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  button:hover:not(:disabled) {
+    background: #a83a7c;
+  }
+
+  button:disabled {
+    background: var(--borde);
+    color: var(--gris-suave);
+    cursor: default;
+  }
+
+  .ayuda {
+    font-size: 13px;
+    color: var(--gris-suave);
+    margin: 0 0 40px;
+  }
+
+  /* Indicador de carga: los 3 píxeles del isotipo iluminándose en secuencia */
+  .cargando {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin: 24px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--gris-suave);
+  }
+
+  .cargando.activo {
+    display: flex;
+  }
+
+  .pixeles {
+    display: flex;
+    gap: 4px;
+  }
+
+  .pixel {
+    width: 10px;
+    height: 10px;
+    background: var(--borde);
+    animation: parpadeo 1.2s ease-in-out infinite;
+  }
+
+  .pixel:nth-child(1) { background: var(--azul-itm); animation-delay: 0s; }
+  .pixel:nth-child(2) { background: var(--azul-digital); animation-delay: 0.2s; }
+  .pixel:nth-child(3) { background: var(--magenta); animation-delay: 0.4s; }
+
+  @keyframes parpadeo {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pixel { animation: none; opacity: 1; }
+  }
+
+  .resultado {
+    display: none;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--borde);
+  }
+
+  .resultado.visible {
+    display: block;
+  }
+
+  .respuesta {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    margin-bottom: 28px;
+  }
+
+  .fuentes-titulo {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gris-suave);
+    margin: 0 0 12px;
+  }
+
+  .fuente {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borde);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .fuente:last-child {
+    border-bottom: none;
+  }
+
+  .fuente-titulo {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .fuente-titulo:hover {
+    color: var(--azul-digital);
+  }
+
+  .fuente-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--gris-suave);
+    white-space: nowrap;
+  }
+
+  .error {
+    display: none;
+    margin-top: 24px;
+    padding: 14px 16px;
+    background: #fdf2f2;
+    border-left: 3px solid var(--magenta);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .error.visible {
+    display: block;
+  }
+
+  footer {
+    margin-top: 80px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gris-suave);
+  }
+</style>
+</head>
+<body>
+  <div class="contenedor">
+    <header>
+      <img src="/assets/Coriotlab_Isotipo_FullColor.svg" alt="CORIOT">
+      <span>REGISTRO DE ERRORES</span>
+    </header>
+
+    <h1>¿Qué error estás buscando?</h1>
+
+    <form id="form-pregunta">
+      <input
+        type="text"
+        id="input-pregunta"
+        placeholder="Ej: motor DC que no gira con L298N"
+        autocomplete="off"
+        required
+      >
+      <button type="submit" id="boton-enviar">Buscar</button>
+    </form>
+    <p class="ayuda">Busca en los errores de código y hardware ya registrados por el equipo.</p>
+
+    <div class="cargando" id="cargando">
+      <div class="pixeles">
+        <div class="pixel"></div>
+        <div class="pixel"></div>
+        <div class="pixel"></div>
+      </div>
+      <span id="texto-cargando">Buscando en la base de errores...</span>
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="resultado" id="resultado">
+      <div class="respuesta" id="respuesta"></div>
+      <div id="fuentes-contenedor"></div>
+    </div>
+
+    <footer>CORIOTLAB — Sistemas de Control y Robótica, ITM Medellín</footer>
+  </div>
+
+  <script>
+    const form = document.getElementById('form-pregunta');
+    const input = document.getElementById('input-pregunta');
+    const boton = document.getElementById('boton-enviar');
+    const cargando = document.getElementById('cargando');
+    const textoCargando = document.getElementById('texto-cargando');
+    const errorDiv = document.getElementById('error');
+    const resultadoDiv = document.getElementById('resultado');
+    const respuestaDiv = document.getElementById('respuesta');
+    const fuentesContenedor = document.getElementById('fuentes-contenedor');
+
+    // La primera consulta después de un tiempo de inactividad puede tardar
+    // más porque el backend descarga el modelo de embeddings en frío.
+    // Avisamos esto solo si la respuesta está tardando, para no generar
+    // ansiedad en consultas rápidas normales.
+    let avisoLargoTimeout = null;
+
+    form.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      const pregunta = input.value.trim();
+      if (!pregunta) return;
+
+      // Reset de estado visual
+      errorDiv.classList.remove('visible');
+      resultadoDiv.classList.remove('visible');
+      boton.disabled = true;
+      cargando.classList.add('activo');
+      textoCargando.textContent = 'Buscando en la base de errores...';
+
+      avisoLargoTimeout = setTimeout(() => {
+        textoCargando.textContent = 'Esto puede tardar un poco más de lo normal...';
+      }, 15000);
+
+      try {
+        const respuesta = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: pregunta }),
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+          throw new Error(datos.error || 'Ocurrió un error inesperado.');
+        }
+
+        mostrarResultado(datos);
+      } catch (err) {
+        mostrarError(err.message);
+      } finally {
+        clearTimeout(avisoLargoTimeout);
+        cargando.classList.remove('activo');
+        boton.disabled = false;
+      }
+    });
+
+    function mostrarResultado(datos) {
+      respuestaDiv.textContent = datos.answer;
+
+      fuentesContenedor.innerHTML = '';
+
+      if (datos.matches && datos.matches.length > 0) {
+        const titulo = document.createElement('p');
+        titulo.className = 'fuentes-titulo';
+        titulo.textContent = `Fuentes (${datos.matches.length})`;
+        fuentesContenedor.appendChild(titulo);
+
+        datos.matches.forEach((match) => {
+          const enlace = document.createElement('a');
+          enlace.className = 'fuente';
+          enlace.href = match.url;
+          enlace.target = '_blank';
+          enlace.rel = 'noopener noreferrer';
+
+          const titulo = document.createElement('span');
+          titulo.className = 'fuente-titulo';
+          titulo.textContent = `#${match.id} ${match.title}`;
+
+          const meta = document.createElement('span');
+          meta.className = 'fuente-meta';
+          meta.textContent = match.similitud.toFixed(2);
+
+          enlace.appendChild(titulo);
+          enlace.appendChild(meta);
+          fuentesContenedor.appendChild(enlace);
+        });
+      }
+
+      resultadoDiv.classList.add('visible');
+    }
+
+    function mostrarError(mensaje) {
+      errorDiv.textContent = `No se pudo completar la búsqueda: ${mensaje}`;
+      errorDiv.classList.add('visible');
+    }
+  </script>
+</body>
+</html>
