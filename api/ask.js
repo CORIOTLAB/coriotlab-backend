@@ -23,7 +23,7 @@
 import { pipeline } from '@xenova/transformers';
 
 const EMBEDDING_MODEL = 'Xenova/paraphrase-multilingual-MiniLM-L12-v2';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_MODEL = 'openai/gpt-oss-120b';
 const MIN_SIMILARITY = 0.3; // umbral: por debajo de esto, se considera "no relevante"
 const MAX_MATCHES = 4;
 
