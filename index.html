@@ -29,6 +29,14 @@
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    min-height: 100vh;
+    /* Leve tinte de marca de fondo — dos de los colores institucionales
+       a opacidad casi imperceptible, para que el espacio alrededor del
+       contenido se sienta diseñado a propósito, no vacío por accidente. */
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(88, 172, 222, 0.06), transparent 40%),
+      radial-gradient(circle at 0% 100%, rgba(193, 72, 148, 0.05), transparent 45%);
+    background-attachment: fixed;
   }
 
   /* Estado de foco accesible y consistente con la marca — visible al
@@ -45,8 +53,8 @@
      lugares, para que funcione como firma visual y no como ruido. */
   .linea-diagonal {
     position: fixed;
-    top: -10%;
-    right: -5%;
+    top: -20%;
+    right: -10%;
     width: 45vw;
     height: 180vh;
     background: linear-gradient(
@@ -58,6 +66,30 @@
     );
     pointer-events: none;
     z-index: 0;
+  }
+
+  /* En pantallas grandes, la línea necesita mucho más presencia — en
+     móvil el mismo tamaño relativo (45vw) ya se ve grande, pero en un
+     monitor ancho se vuelve casi invisible. La escalamos aparte. */
+  @media (min-width: 900px) {
+    .linea-diagonal {
+      width: 30vw;
+      right: -8%;
+    }
+
+    .linea-diagonal::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      left: -55vw;
+      background: linear-gradient(
+        135deg,
+        transparent 48.5%,
+        var(--borde) 48.5%,
+        var(--borde) 48.9%,
+        transparent 48.9%
+      );
+    }
   }
 
   /* Cuadrados de píxel del isotipo, reutilizados como acento decorativo
@@ -88,9 +120,15 @@
   .contenedor {
     position: relative;
     z-index: 1;
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
     padding: 40px 20px 80px;
+  }
+
+  @media (min-width: 900px) {
+    .contenedor {
+      padding-top: clamp(40px, 10vh, 120px);
+    }
   }
 
   header {
@@ -106,6 +144,12 @@
     width: auto;
   }
 
+  @media (min-width: 900px) {
+    header img {
+      height: 34px;
+    }
+  }
+
   header span {
     font-family: 'Space Mono', monospace;
     font-size: 13px;
@@ -116,8 +160,8 @@
   h1 {
     font-family: 'MuseoModerno', sans-serif;
     font-weight: 700;
-    font-size: clamp(28px, 5vw, 38px);
-    line-height: 1.15;
+    font-size: clamp(28px, 4.5vw, 48px);
+    line-height: 1.12;
     margin: 0 0 32px;
     color: var(--gris-pizarra);
   }
